@@ -1,12 +1,32 @@
 D: \Dev\it30a\backups
 
-1. CREATE DATABASE <DATABASE_NAME>;
-2. SHOW DATABASES;
-3. CONNECT <DATABASE_NAME>;
-4. CREATE TABLE <TABLE_NAME_IN_PLURAL> ();
+1. CREATE DATABASE <database_name>;
+2. SHOW DATABASES; 
+3. CONNECT <database_name>;
+4. CREATE TABLE <table_name_in_plural>();
+5. INSERT INTO <table_name_in_plural>
+    (columns)
+    VALUES (values);
 
-UTILITY COMMANDS
-\! cls
-mysqldump -u root -p --databases library_db > C:\Users\Admin\it30a\it30a\backups\08182026_library_db.sql
 
-mysqldump -u root -p --databases library_db > "C:\Users\Admin\it30a\it30a\backups\%date:~-4%_%date:~4,2%_%date:~7,2%_%time:~0,2%_%time:~3,2%_%time:~6,2%_library_db.sql"
+Utility Commandssour
+\! cls 
+mysqldump -u root -p --databases library_db> C:\dev\it30a\backups\08182026_library_db.sql
+
+mysqldump -u root -p --databases library_db> "C:\dev\it30a\backups\%date:~-4%_%date:~4,2%_%date:~7,2%_%time:~0,2%_%time:~3,2%_%time:~6,2%_library_db.sql"
+
+-- Working
+mysqldump -u root -p --databases library_db> "C:\dev\it30a\backups\%date:~-4%_%date:~4,1%_%date:~6,2%_%time:~0,2%_%time:~3,2%_%time:~6,2%_library_db.sql"
+
+%date:~-4%_
+%date:~4,2%_
+%date:~7,2%_
+%time:~0,2%_
+%time:~3,2%_
+%time:~6,2%_
+library_db.sql"
+
+LABORATORY 2
+ALTER TABLE students ADD COLUMN student_created_at TIMESTAMP NULL DEFAULT NULL;
+UPDATE students SET student_created_at = CURRENT_TIMESTAMP WHERE student_created_at IS NULL;
+ALTER TABLE students MODIFY COLUMN student_created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;

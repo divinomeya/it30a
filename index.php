@@ -2,7 +2,7 @@
 
 //Database Connection
 $host = 'localhost';
-$db = 'it30b_lab_db';
+$db = 'it30a_lab_db';
 $user = 'root';
 $pass = '';
 $charset = 'utf8mb4';
@@ -32,7 +32,7 @@ $action = $_GET['action'] ?? '';
 
 // Fetch Students
 if($section==='students'){
-    
+
     $stmt = $pdo->query("
         SELECT *
         FROM students
@@ -42,6 +42,43 @@ if($section==='students'){
     $students = $stmt->fetchAll();
 }
 
+
+//Create Student    
+if ($section==='students' && $action==='create'){
+
+if($_SERVER['REQUEST_METHOD'] === 'POST')
+
+    $firstName = trim($_POST['student_first_name'] ?? '');
+    $lastName = trim($_POST['student_last_name'] ?? '');
+    $course = trim($_POST['student_course'] ?? '');
+
+    
+    if($firstName !== '' && $lastName !== '' && $course !== ''){
+
+    $sql=("
+        INSERT INTO students(
+        student_first_name, 
+        student_last_name,
+        student_course
+
+        VALUES(?,?,?)
+    ");
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+    $firstName,
+    $lastName,
+    $course
+
+    ]);
+
+    //$_SESSION['alert] = 'Student Saved Successfully';
+
+
+    header("Location: index.php?section=students");
+    exit;
+    }
+}
 
 
 
@@ -66,7 +103,55 @@ if($section==='students'){
     <hr>
     <?php if($section === 'students'): ?>
         <h1>Students</h1>
-        <table>
+<p>
+        <a href="index.php?section=students&action=create">
+            Add Student</a>
+
+</p>
+        <?php if($action==='create'): ?>
+            <h2>Add Student</h2>
+
+<form method="POST">
+            <p>
+            <label>First Name</label>
+            <br>
+            <input type="text"
+                    name="student_first_name"
+                    required
+                    />
+            </p>
+                    <p>
+            <label>Last Name</label>
+            <br>
+            <input type="text"
+                    name="student_last_name"
+                    required
+                    />
+            </p>
+        <p>
+            <label>Student Course</label>
+            <br>
+            <input type="text"
+                    name="student_course"
+                    required
+                    />
+            </p>
+
+            <button type="submit">
+                save
+            </button>
+
+            <a href= "index.php?sction=student">
+                Cancel
+            </a>
+
+
+</form>
+
+            <?php else : ?>
+
+        
+        <table >
             <thead>
                 <tr>
                     <th>ID</th>
@@ -76,7 +161,7 @@ if($section==='students'){
                     <th>Created at</th>
                     <th>Actions</th>
                 </tr>
-            <thead>
+            </thead>
             <tbody>
                 <?php foreach($students as $student): ?>
                     <tr>
@@ -106,6 +191,10 @@ if($section==='students'){
 
         </table>
 
+        <?php endif; ?>
+
+
+
 
 
     <?php endif;?>
@@ -118,6 +207,5 @@ if($section==='students'){
         <h1>Borrow</h1>
     <?php endif;?>
 
-    
+
 </body>
-</html>

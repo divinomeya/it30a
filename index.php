@@ -196,6 +196,8 @@ if($section ==='books' && $action === 'update'){
     $bookId= (int) ($_GET['id'] ?? 0);
 
 
+
+
     //retrieve book information
 
     $stmt= $pdo->prepare("
@@ -244,6 +246,112 @@ if($section ==='books' && $action === 'update'){
     }
 
 }
+
+// fetch borrow records
+if ($section === 'borrow'){
+
+    // fetch srudents for borrow form
+$stmt=$pdo->query("
+    SELECT
+        student_id,
+        student_first_name,
+        student_last_name
+    FROM students
+    ORDER BY student_last_name, student_first_name
+");
+
+
+$students = $stmt->fetchAll();
+
+    // fetch books for borrow form
+$stmt=$pdo->query("
+    SELECT
+        book_id,
+        book_title,
+        book_author
+    FROM books
+    ORDER BY book_title
+
+
+");
+    $books = $stmt->fetchALl();
+}
+
+// Borrow a book
+if ($section === 'borrow' && $action === 'create') {
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        $studentId = (int) ($_POST['student_id'] ?? 0);
+        $bookId = (int) ($_POST['book_id'] ?? 0);
+
+        if ($studentId > 0 && $bookId > 0) {
+
+          // check if book is already returned
+            $stmt = $pdo->prepare("
+                SELECT borrow_id
+                FROM borrow
+                WHERE student_id = ?
+                  AND borrow_return_date IS NULL
+                LIMIT 1
+            ");
+
+            $stmt->execute([$studentId]);
+
+            $studentBorrow = $stmt->fetch();
+
+
+            if ($studentBorrow) {
+
+                $_SESSION['alert'] =
+                    'This student cannot borrow another book because a previous book has not yet been returned.';
+
+            } else {
+              
+
+    $stmt = $pdo->prepare("
+     SELECT borrow_id
+        FROM borrow
+        WHERE book_id = ?
+        AND borrow_return_date IS NULL
+        LIMIT 1
+                ");
+        $stmt->execute([$bookId]);
+
+      $bookBorrow = $stmt->fetch();
+
+
+       if ($bookBorrow) {
+
+       $_SESSION['alert'] = 'This book cannot be borrowed because it is currently borrowed.';
+
+     } else {
+     // create borrow record
+
+    $stmt = $pdo->prepare("
+        INSERT INTO borrow (
+        student_id,
+        book_id
+             )
+        VALUES (?, ?)
+
+        ");
+            $stmt->execute([
+            $studentId,
+            $bookId
+            ]);
+
+         $_SESSION['alert'] =
+         'Book borrowed successfully';
+       }
+   }
+
+   header("Location: index.php?section=borrow");
+     exit;
+        }
+    }
+}
+
 
 
 
@@ -433,6 +541,7 @@ if($section ==='books' && $action === 'update'){
         <a href="index.php?section=books&action=create">
             Add Book</a>
 
+
         </p>
 
         <?php if($action==='create'): ?>
@@ -566,10 +675,74 @@ if($section ==='books' && $action === 'update'){
 <?php endif;?>
 <?php endif;?>
 
+
 <?php if($section === 'borrow'): ?>
 <h1>Borrow</h1>
+<p>
+    <a href="index.php?section=borrow&action=create">
+        Borrow a Book
+</a>
+
+</p>
+
+<?php if($action=== 'create'):?>
+    <h3>Borrow a Book</h3>
+    <form method="POST">
+        <p>
+            <label>Student: </label>
+            <br>
+            <select name="student_id" required>
+                <option value="">
+                    -- select students
+</option>
 
 
+<?php foreach($students as $students): ?>
+    <option value=" <?= $student['student_id'] ?> ">
+        <?+htmlspecialchars(
+            $student['student_first_name']
+             .' '.
+             $student['student_last_name']
+        )?>
+        </option>
+
+        <?php endforeach; ?>
+</select>
+</p>
+
+<p>
+    <label>Book: </label>
+    <br>
+    <select name="book_id" required>
+        <option value="">
+            -- select book --
+</option>
+
+<?php foreach($book as $book): ?>
+
+    <option value=" <?= $student['book_id'] ?> ">
+        <?+htmlspecialchars(
+            $student['book_title']
+             .' '.
+             $student['book_author']
+        )?>
+        </option>
+
+        <?php endforeach; ?>
+</select>
+</p>
+<button type="submit">
+    Borrow
+</button>
+<a href="indext.php?section=borrow">
+    cancel
+</a>
+
+
+</form>
+
+
+<?php endif;?>
 <?php endif;?>
 
 

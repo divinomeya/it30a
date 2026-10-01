@@ -42,6 +42,18 @@ $stmt = $pdo->query("
 $students = $stmt->fetchAll();
 }
 
+//  Fetch books
+if($section==='books'){
+
+    $stmt = $pdo->query("
+        SELECT *
+        FROM books
+        ORDER BY book_id DESC
+    ");
+
+    $books = $stmt->fetchAll();
+}
+
 
 //Create Student
 if($section==='students' && $action==='create'){
@@ -83,6 +95,8 @@ if($section==='students' && $action==='create'){
 }
 
 }
+
+
 
 
 //Update Student
@@ -322,6 +336,47 @@ if($section ==='students' && $action === 'update'){
 
 <?php if($section === 'books'): ?>
 <h1>Books</h1>
+
+ <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Book Title</th>
+                    <th>Book Author</th>
+                    <th>Book Category</th>
+                    <th>Created at</th>
+                    <th>Actions</th>
+                </tr>
+            <thead>
+            <tbody>
+                <?php foreach($books as $book): ?>
+                    <tr>
+                        <td>
+                            <?=htmlspecialchars($book['book_id']) ?>
+                        </td>
+                        <td>
+                            <?=htmlspecialchars($book['book_title']) ?>
+                        </td>
+                        <td>
+                            <?=htmlspecialchars($book['book_author']) ?>
+                        </td>
+                        <td>
+                            <?=htmlspecialchars($book['book_category']) ?>
+                        </td>
+                        <td>
+                            <?=htmlspecialchars($book['book_created_at']) ?>
+                        </td>
+                         <td>
+                            <a>Edit</a>
+                            |
+                            <a>Delete</a>
+                        </td>
+                    </tr>
+                <?php endforeach?>
+            </tbody>
+
+        </table>
+
 <?php endif;?>
 
 <?php if($section === 'borrow'): ?>

@@ -378,11 +378,24 @@ if($section==='borrow' && $action==="create"){
 
 }
 
+if($section==='borrow' && $action==="return"){
+    
+    $borrowId = (int) ($_GET['id']?? 0);
 
+    $stmt = $pdo->prepare("
+        UPDATE borrow
+        SET borrow_return_date = CURRENT_TIMESTAMP
+        WHERE borrow_id=?
+    ");
 
+$stmt ->execute([$borrowId]);
 
+$_SESSION['alert'] = 'Book returned successfully.';
 
+header("Location: index.php?section=borrow");
+exit;
 
+}
 
 
 
@@ -505,7 +518,7 @@ if($section==='borrow' && $action==="create"){
 
         <?php else: ?>   
 
-            <table>
+            <table border="1" cellpadding="8"s>
                 <thead>
                      <tr>
                     <th>ID</th>
@@ -654,7 +667,8 @@ if($section==='borrow' && $action==="create"){
 
     <?php else : ?>
     
-        <table>
+ 
+            <table border="1" cellpadding="8"s>
             <thead>
                 <tr>
                     <th>ID</th>
@@ -777,15 +791,18 @@ if($section==='borrow' && $action==="create"){
 
     <h2>Borrow Records</h2>
 
-        <table cellpadding="5">
+        
+            <table border="1" cellpadding="8"s>
             <thead>
                 <tr>
-                    <th>Borrow ID</th>
-                    <th>Student Name</th>
-                    <th>Book Title</th>
+                    <th>ID</th>
+                    <th>Student </th>
+                    <th>Book </th>
                     <th>Book Author</th>
-                    <th>Created At</th>
-                    <th>Returned At</th>
+                    <th>Borrow Date</th>
+                    <th>Return Date</th> 
+                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
 
@@ -814,19 +831,44 @@ if($section==='borrow' && $action==="create"){
                         </td>
                         <td>
                             <?= htmlspecialchars($borrow['borrow_date']) ?>
-                        </td>
+                        
+                    
+               
+                    </td>
+                    <td> 
+                    <?= htmlspecialchars(
+                        $borrow['borrow_return_date'] ?? 'Not Returned'
+                    ) ?>
 
-                        <td>
-                            <?php if($borrow['borrow_return_date'] === null): ?>
 
-                                Not Returned
+                    </td>
+                    <td>
 
-                            <?php else: ?>
+                <?php if ($borrow['borrow_return_date']): ?>
+                    
+                    Returned
 
-                                <?= htmlspecialchars($borrow['borrow_return_date']) ?>
+                <?php else: ?>
 
-                            <?php endif; ?>
-                        </td>
+                        Borrowed
+                <?php endif; ?>
+
+                </td>
+                <td>
+                    <?php if (!$borrow['borrow_return_date']): ?>
+
+                        <a  
+                            href="index.php?section=borrow&action=return&id=<?= $borrow['borrow_id'] ?>"
+                            onclick="return confirm('Mark this book as returned');"
+                        >
+                        Return
+                    </a>
+
+                <?php endif; ?>
+
+                    </td>
+
+
 
                     </tr>
 
@@ -853,4 +895,4 @@ if($section==='borrow' && $action==="create"){
 
 
 
-</html> 
+</html>

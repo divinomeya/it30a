@@ -5,11 +5,11 @@
 -- book Query #1
 SELECT * FROM books;
 
---Student Query #2 - Select books order by book_id ASC
+-- Student Query #2 - Select books order by book_id ASC
 SELECT * FROM books
     ORDER BY book_id ASC;
 
-    --Student Query #3 -- select books order by id DESC
+    -- Student Query #3 -- select books order by id DESC
     SELECT * FROM books
     ORDER BY book_id DESC;
 
@@ -52,18 +52,18 @@ SELECT * FROM books
   
     -- Student query #8- select books order by book_title ASC
     SELECT 
-           book_title
+           book_title,
            book_author,
-           book_category,
+           book_category
     FROM books
     ORDER BY book_title ASC;
 
     
     -- Student query #9 - select books order by book_title DESC
     SELECT 
-            book_title
+            book_title,
            book_author,
-           book_category,
+           book_category
     FROM books
     ORDER BY book_title DESC;
     
